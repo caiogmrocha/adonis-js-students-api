@@ -11,8 +11,8 @@ export default class StudentsController {
   }
 
   public async create({ request, response }: HttpContextContract) {
-    let data = request.body();
-    const image = request.file('image');
+    let data = request.body()
+    const image = request.file('image')
 
     if (image) {
       await image.move(Application.tmpPath('images'), {
@@ -34,5 +34,23 @@ export default class StudentsController {
       .returning('id')
 
     return response.status(201).json(studentId)
+  }
+
+  public async getOne({ params, response }: HttpContextContract) {
+    const studentId = params.id;
+
+    if (!studentId) {
+      return response.status(403).json({
+        message: 'ID inválido',
+      })
+    }
+
+    const student = await Database
+      .from('students')
+      .where('id', studentId)
+      .select('*')
+      .first()
+
+    return response.json(student)
   }
 }

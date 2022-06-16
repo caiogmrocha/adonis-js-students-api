@@ -21,4 +21,5 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.get('/students', 'StudentsController.getAll')
+Route.get('/students/:id', 'StudentsController.getOne')
 Route.post('/students', 'StudentsController.create')
