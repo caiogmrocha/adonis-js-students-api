@@ -9,4 +9,30 @@ export default class StudentsController {
 
     return response.json(students);
   }
+
+  public async create({ request, response }: HttpContextContract) {
+    let data = request.body();
+    const image = request.file('image');
+
+    if (image) {
+      await image.move(Application.tmpPath('images'), {
+        name: `user-${Date.now()}`,
+        overwrite: true,
+      })
+    }
+
+    data = {
+      ...data,
+      password: await Hash.use('bcrypt').make(data.password),
+      'image_path': image?.fileName,
+    }
+
+    const studentId = await Database
+      .insertQuery()
+      .table('students')
+      .insert(data)
+      .returning('id')
+
+    return response.status(201).json(studentId)
+  }
 }
